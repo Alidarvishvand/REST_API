@@ -10,6 +10,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
        model = User
        fields = '__all__'
        extra_kwargs = {'password':{'write_only':True}}
+
+    def create(self,validated_data):
+        del validated_data['password2']
+        return User.objects.create_user(**validated_data)
+
+
+    
     def validate_username(self, value):
         if value == 'admin':
             raise serializers.ValidationError('username cannot be empty')
