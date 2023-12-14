@@ -3,17 +3,52 @@
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import person 
-from .serializers import personserializer
+from .models import person,question,answer
+from .serializers import personserializer,Questionserializer,AnswerSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import status
 
+#home classes ==>
 class HOME(APIView):
+    authentication_classes = [TokenAuthentication,]
+    permission_classes = [AllowAny,]
     def get(self,request):
-        # name= request.query_params['name']
+        
         persons = person.objects.all()
         ser_data = personserializer(instance=persons,many = True)
         return Response(data=ser_data.data)
-    
 
-    # def post(self,request):
-    #     name = request.data['name']
-    #     return Response({'name':name})
+
+#classes question==>
+class Questionlistview(APIView):
+    def get(self,request):
+        questions = question.objects.all()
+        srz_data = Questionserializer(instance=questions, many = True).data
+        return Response(srz_data,status=status.HTTP_200_OK)
+    
+    
+class questioncreatview(APIView):
+    def post(self,request):
+        srz_data = Questionserializer(data=request.data)
+        if srz_data.is_valid():
+            srz_data.save()
+            return Response(srz_data.data, status=status.HTTP_201_CREATED)
+        return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class questionupdateview(APIView):
+        def put(self,request,pk):
+            questions = question.objects.get(pk=pk)
+            srz_data = Questionserializer(instance=questions,data=request.data, partial=True)
+            if srz_data.is_valid():
+                srz_data.save()
+                return Response(srz_data.data, status=status.HTTP_200_OK)
+            return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+class questiondeletview(APIView):
+     def delete(self,request,pk):
+        questions = question.objects.get(pk=pk)
+        questions.delete()
+        return Response({'message':'questions deleted successfully'},status=status.HTTP_200_OK)
+    
