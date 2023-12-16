@@ -8,7 +8,7 @@ from .serializers import personserializer,Questionserializer,AnswerSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
-
+from permission import IsOwnerOrReadOnly
 #home classes ==>
 class HOME(APIView):
     authentication_classes = [TokenAuthentication,]
@@ -29,6 +29,8 @@ class Questionlistview(APIView):
     
     
 class questioncreatview(APIView):
+    permission_classes = [IsAuthenticated,]
+
     def post(self,request):
         srz_data = Questionserializer(data=request.data)
         if srz_data.is_valid():
@@ -38,8 +40,12 @@ class questioncreatview(APIView):
 
 
 class questionupdateview(APIView):
+        permission_classes = [IsOwnerOrReadOnly,]
+
+
         def put(self,request,pk):
             questions = question.objects.get(pk=pk)
+            self.check_object_permissions(request,questions)
             srz_data = Questionserializer(instance=questions,data=request.data, partial=True)
             if srz_data.is_valid():
                 srz_data.save()
@@ -47,6 +53,7 @@ class questionupdateview(APIView):
             return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
         
 class questiondeletview(APIView):
+     permission_classes = [IsOwnerOrReadOnly,]
      def delete(self,request,pk):
         questions = question.objects.get(pk=pk)
         questions.delete()
