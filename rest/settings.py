@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'api',
     'accounts.apps.AccountsConfig',
     'rest_framework',
-    'rest_framework.authtoken',   
+    'drf_spectacular',
 
 ]
 
@@ -134,19 +134,33 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
-         'rest_framework.authentication.TokenAuthentication',
-        
+         'rest_framework_simplejwt.authentication.JWTAuthentication', 
+         
     ],
     'DEFAULT_THROTTLE_CLASSES':[
         'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'rest_framework.throttling.UserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '3/hour',
-        'user': '10/hour'
-    }
+        'user': '10/hour',
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ]
+
 }
 
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'shop rest',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
 # REST_FRAMEWORK = {
 #     'DEFAULT_PERMISSION_CLASSES': [
 #         'rest_framework.permissions.IsAuthenticated',

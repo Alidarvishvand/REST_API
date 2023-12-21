@@ -30,7 +30,7 @@ class Questionlistview(APIView):
     
 class questioncreatview(APIView):
     permission_classes = [IsAuthenticated,]
-
+    serializer_classes = Questionserializer
     def post(self,request):
         srz_data = Questionserializer(data=request.data)
         if srz_data.is_valid():
